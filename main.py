@@ -10,6 +10,10 @@ from cachetools import TTLCache
 import random
 import json
 
+import threading
+import time
+import sys
+
 # Tải biến môi trường từ .env
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -1042,3 +1046,26 @@ if __name__ == "__main__":
         asyncio.run(anilist.close())
         asyncio.run(jikan.close())
         asyncio.run(waifu_api.close())
+        
+
+def background_task():
+    while True:
+        print("Tớ đang làm việc đây, đừng có hối!")
+        time.sleep(5)
+
+if __name__ == "__main__":
+    if "--worker" in sys.argv:
+        worker = threading.Thread(target=background_task)
+        worker.daemon = True
+        worker.start()
+        worker.join()  # Giữ worker chạy
+    else:
+        # Code bind cổng cho web, ví dụ với Flask
+        from flask import Flask
+        app = Flask(__name__)
+
+        @app.route("/")
+        def home():
+            return "Tớ chạy được rồi đó, hmph!"
+
+        app.run(host="0.0.0.0", port=8000)
